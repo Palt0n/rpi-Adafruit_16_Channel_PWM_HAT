@@ -6,7 +6,7 @@ test
 
 
 Creating python venv
-```x
+```
 sudo apt-get install python3-venv
 python -m venv env
 source env/bin/activate
