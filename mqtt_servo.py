@@ -50,10 +50,12 @@ def on_message(client, userdata, message):
     move_servo(data_json)
 
 def move_servo(data_json):
-    camera_pan = data_json["camera_pan"]
-    camera_tilt = data_json["camera_tilt"]
-    kit.servo[SERVO_INDEX_PAN].angle = camera_pan
-    kit.servo[SERVO_INDEX_TILT].angle = camera_tilt
+    if "camera_pan" in data_json:
+        camera_pan = data_json["camera_pan"]
+        kit.servo[SERVO_INDEX_PAN].angle = camera_pan
+    if "camera_tilt" in data_json:
+        camera_tilt = data_json["camera_tilt"]
+        kit.servo[SERVO_INDEX_TILT].angle = camera_tilt
   
 Connected = False   #global variable for the state of the connection
   
