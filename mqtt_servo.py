@@ -5,14 +5,6 @@ import time
 import os
 import json
 
-kit = ServoKit(channels=8)
-
-
-def move_servo(index, angle):
-    """
-    Angle moves from 0 to 180
-    """
-    kit.servo[index].angle = 0
 
 MQTT_BROKER_ADDRESS = os.environ.get("MQTT_BROKER_ADDRESS")
 MQTT_BROKER_PORT = os.environ.get("MQTT_BROKER_PORT")
@@ -32,6 +24,15 @@ MQTT_BROKER_PORT = int(MQTT_BROKER_PORT)
 SERVO_INDEX_PAN = 0
 SERVO_INDEX_TILT = 1
 
+SERVO_PAN_ANGLE = 90
+SERVO_TILT_ANGLE = 90
+kit = ServoKit(channels=8)
+def move_servo(index, angle):
+    """
+    Angle moves from 0 to 180
+    """
+    kit.servo[index].angle = 0
+
 def on_connect(client, userdata, flags, rc):
   
     if rc == 0:
@@ -50,12 +51,45 @@ def on_message(client, userdata, message):
     move_servo(data_json)
 
 def move_servo(data_json):
+    global SERVO_PAN_ANGLE
+    global SERVO_TILT_ANGLE
     if "camera_pan" in data_json:
-        camera_pan = data_json["camera_pan"]
-        kit.servo[SERVO_INDEX_PAN].angle = camera_pan
+        camera_pan_angle = data_json["camera_pan"]
+        SERVO_PAN_ANGLE = int(camera_pan_angle)
+        kit.servo[SERVO_INDEX_PAN].angle = SERVO_PAN_ANGLE
+        client.publish(MQTT_TOPIC_CAMERA, json.dumps({"move_camera_pan": SERVO_PAN_ANGLE}))
     if "camera_tilt" in data_json:
-        camera_tilt = data_json["camera_tilt"]
-        kit.servo[SERVO_INDEX_TILT].angle = camera_tilt
+        camera_tilt_angle = data_json["camera_tilt"]
+        SERVO_TILT_ANGLE = int(camera_tilt_angle)
+        kit.servo[SERVO_INDEX_TILT].angle = SERVO_TILT_ANGLE
+        client.publish(MQTT_TOPIC_CAMERA, json.dumps({"move_camera_tilt": SERVO_TILT_ANGLE}))
+    if "action" in data_json:
+        action = data_json["action"]
+        if action == "UP":
+            SERVO_TILT_ANGLE += 1
+        elif action == "DOWN":
+            SERVO_TILT_ANGLE -= 1
+        elif action == "LEFT":
+            SERVO_PAN_ANGLE += 1
+        elif action == "RIGHT":
+            SERVO_PAN_ANGLE -= 1
+        elif action == "MIDDLE":
+            SERVO_PAN_ANGLE = 90
+            SERVO_TILT_ANGLE = 90
+        else:
+            assert False
+        if SERVO_PAN_ANGLE < 0:
+            SERVO_PAN_ANGLE = 0
+        if SERVO_TILT_ANGLE < 0:
+            SERVO_TILT_ANGLE = 0
+        if SERVO_PAN_ANGLE > 180:
+            SERVO_PAN_ANGLE = 180
+        if SERVO_TILT_ANGLE > 180:
+            SERVO_TILT_ANGLE = 180
+        kit.servo[SERVO_INDEX_PAN].angle = SERVO_PAN_ANGLE
+        client.publish(MQTT_TOPIC_CAMERA, json.dumps({"move_camera_pan": SERVO_PAN_ANGLE}))
+        kit.servo[SERVO_INDEX_TILT].angle = SERVO_TILT_ANGLE
+        client.publish(MQTT_TOPIC_CAMERA, json.dumps({"move_camera_tilt": SERVO_TILT_ANGLE}))
   
 Connected = False   #global variable for the state of the connection
   
@@ -75,13 +109,14 @@ client.loop_start()        #start the loop
   
 while Connected != True:    #Wait for connection
     time.sleep(0.1)
-
 MQTT_TOPIC_CAMERA = MQTT_TOPIC + "/camera"
+print(MQTT_TOPIC_CAMERA)
 client.subscribe(MQTT_TOPIC_CAMERA)
   
 try:
     while True:
         time.sleep(1)
+        # client.publish(MQTT_TOPIC_CAMERA, "1")
   
 except KeyboardInterrupt:
     print("exiting")
