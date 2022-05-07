@@ -53,7 +53,7 @@ After=multi-user.target
 [Service]
 Type=simple
 EnvironmentFile=/home/pi/rpi-Adafruit_16_Channel_PWM_HAT/env/bin/var.env
-ExecStart=/home/pi/rpi-Adafruit_16_Channel_PWM_HAT/env/bin/python /home/pi/rpi->
+ExecStart=/home/pi/rpi-Adafruit_16_Channel_PWM_HAT/env/bin/python /home/pi/rpi-Adafruit_16_Channel_PWM_HAT/mqtt_servo.py
 Restart=on-abort
 
 [Install]
@@ -88,4 +88,17 @@ sudo systemctl stop mqtt_listen.service
 Check service's log
 ```
 sudo journalctl -f -u mqtt_listen.service
+```
+
+
+```
+
+libcamera-vid -t 0 --width 256 --height 144 -q 100 -n --codec mjpeg --inline --listen -o tcp://192.168.XX.XX:XXXX
+```
+```
+sudo chmod 644 /lib/systemd/system/libcamera_stream.service
+sudo systemctl daemon-reload
+sudo systemctl enable libcamera_stream.service
+sudo systemctl start libcamera_stream.service
+sudo systemctl status libcamera_stream.service
 ```
