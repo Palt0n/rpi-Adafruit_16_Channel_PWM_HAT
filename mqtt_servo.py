@@ -14,10 +14,10 @@ GPIO.setup(RELAY_IN1_GPIO, GPIO.OUT) # GPIO Assign mode
 GPIO.setup(RELAY_IN2_GPIO, GPIO.OUT) # GPIO Assign mode
 GPIO.setup(RELAY_IN3_GPIO, GPIO.OUT) # GPIO Assign mode
 GPIO.setup(RELAY_IN4_GPIO, GPIO.OUT) # GPIO Assign mode
-GPIO.output(RELAY_IN1_GPIO, GPIO.HIGH)
-GPIO.output(RELAY_IN2_GPIO, GPIO.HIGH)
-GPIO.output(RELAY_IN3_GPIO, GPIO.HIGH)
-GPIO.output(RELAY_IN4_GPIO, GPIO.HIGH)
+GPIO.output(RELAY_IN1_GPIO, GPIO.LOW)
+GPIO.output(RELAY_IN2_GPIO, GPIO.LOW)
+GPIO.output(RELAY_IN3_GPIO, GPIO.LOW)
+GPIO.output(RELAY_IN4_GPIO, GPIO.LOW)
 MQTT_BROKER_ADDRESS = os.environ.get("MQTT_BROKER_ADDRESS")
 MQTT_BROKER_PORT = os.environ.get("MQTT_BROKER_PORT")
 MQTT_BROKER_USER = os.environ.get("MQTT_BROKER_USER")
@@ -78,34 +78,34 @@ def move_servo(data_json):
     if "relay_1" in data_json:
         relay_1_state = data_json["relay_1"]
         if relay_1_state == 0:
-            GPIO.output(RELAY_IN1_GPIO, GPIO.HIGH)
+            GPIO.output(RELAY_IN1_GPIO, GPIO.LOW)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_1_state": relay_1_state}))
         elif relay_1_state == 1:
-            GPIO.output(RELAY_IN1_GPIO, GPIO.LOW)
+            GPIO.output(RELAY_IN1_GPIO, GPIO.HIGH)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_1_state": relay_1_state}))
     if "relay_2" in data_json:
         relay_2_state = data_json["relay_2"]
         if relay_2_state == 0:
-            GPIO.output(RELAY_IN2_GPIO, GPIO.HIGH)
+            GPIO.output(RELAY_IN2_GPIO, GPIO.LOW)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_2_state": relay_2_state}))
         elif relay_2_state == 1:
-            GPIO.output(RELAY_IN2_GPIO, GPIO.LOW)
+            GPIO.output(RELAY_IN2_GPIO, GPIO.HIGH)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_2_state": relay_2_state}))
     if "relay_3" in data_json:
         relay_3_state = data_json["relay_3"]
         if relay_3_state == 0:
-            GPIO.output(RELAY_IN3_GPIO, GPIO.HIGH)
+            GPIO.output(RELAY_IN3_GPIO, GPIO.LOW)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_3_state": relay_3_state}))
         elif relay_3_state == 1:
-            GPIO.output(RELAY_IN3_GPIO, GPIO.LOW)
+            GPIO.output(RELAY_IN3_GPIO, GPIO.HIGH)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_3_state": relay_3_state}))
     if "relay_4" in data_json:
         relay_4_state = data_json["relay_4"]
         if relay_4_state == 0:
-            GPIO.output(RELAY_IN4_GPIO, GPIO.HIGH)
+            GPIO.output(RELAY_IN4_GPIO, GPIO.LOW)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_4_state": relay_4_state}))
         elif relay_4_state == 1:
-            GPIO.output(RELAY_IN4_GPIO, GPIO.LOW)
+            GPIO.output(RELAY_IN4_GPIO, GPIO.HIGH)
             client.publish(MQTT_TOPIC_CAMERA_MOVE, json.dumps({"relay_4_state": relay_4_state}))
     if "action" in data_json:
         action = data_json["action"]
